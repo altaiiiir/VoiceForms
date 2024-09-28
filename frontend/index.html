@@ -6,54 +6,14 @@
     <title>Realtime Audio Transcription</title>
 </head>
 <body>
-<button id="recordButton">Start Recording</button>
+
+
+<button id="start">Start Recording</button>
+<button id="stop">Stop Recording</button>
+
+
 <div id="transcription"></div>
-<script>
-    const recordButton = document.getElementById('recordButton');
-    const transcriptionDiv = document.getElementById('transcription');
-    let mediaRecorder;
-    let ws;
+<script src="./bundle.js"></script>
 
-    recordButton.addEventListener('click', async () => {
-        if (recordButton.textContent === 'Start Recording') {
-            const stream = await navigator.mediaDevices.getUserMedia({audio: true});
-            mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm;codecs=pcm' });
-
-            const audioTrack = stream.getAudioTracks()[0];
-            const settings = audioTrack.getSettings();
-            const sampleRate = settings.sampleRate;
-
-            console.log('Sample Rate:', sampleRate);
-
-            ws = new WebSocket('ws://localhost:8080');
-
-            ws.onopen = () => {
-                console.log('socket opened');
-            };
-
-            ws.onmessage = event => {
-                const data = JSON.parse(event.data);
-                transcriptionDiv.textContent = data.transcription;
-            };
-
-            mediaRecorder.ondataavailable = event => {
-                console.log('ondataavailable', event);
-                if (event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
-                    console.log('sent', event.data);
-                    ws.send(event.data);
-                }
-            };
-
-            mediaRecorder.start(100); // Send audio data in chunks of 250ms
-            recordButton.textContent = 'Stop Recording';
-        } else {
-            mediaRecorder.stop();
-            ws.close();
-            recordButton.textContent = 'Start Recording';
-        }
-    });
-
-
-</script>
 </body>
 </html>
