@@ -1,5 +1,7 @@
 boto3
+fastapi
 langchain-aws
 pip~=24.2
 wheel~=0.44.0
 setuptools~=74.0.0
+uvicorn

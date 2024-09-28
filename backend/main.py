@@ -1,7 +1,14 @@
+from fastapi import FastAPI
+import uvicorn
+from pydantic import BaseModel
 import boto3
 from langchain_aws import ChatBedrock
 from langchain_core.prompts import ChatPromptTemplate
 
+# Initialize FastAPI app
+app = FastAPI()
+
+# Initialize Bedrock client
 bedrock_client = boto3.client(service_name="bedrock-runtime", region_name="us-west-2")
 model_id = "anthropic.claude-3-5-sonnet-20240620-v1:0"
 
@@ -10,41 +17,26 @@ llm = ChatBedrock(
     model_kwargs={"temperature": 1},
 )
 
+# Define request model
+class TranscriptRequest(BaseModel):
+    transcript: str
 
-def get_transcript():
-    sample_transcript = """
-    Agent: Hello, this is Sarah with ABC Insurance. How may I assist you today?
+# Define response model
+class ExtractedInfo(BaseModel):
+    first_name: str = None
+    last_name: str = None
+    phone_number: str = None
+    email: str = None
+    address: str = None
 
-    Customer: Hi Sarah, I'm having trouble logging into my online account.  I think I might've forgotten my password.
-
-    Agent: I can definitely help with that. Can I get your full name and date of birth to verify your account, please?
-
-    Customer: Sure, it's Michael... uh, actually it's Mike Johnson. And my birthday is April 12th, 1985.
-
-    Agent: Thank you, Mike. And what's the email address associated with your account? 
-
-    Customer: It should be mike.johnston85@gmail.com. Wait, no... I think it's mike_johnston@yahoo.com. 
-
-    Agent: No problem, we'll figure it out. Can you also provide the last four digits of your Social Security number for further verification?
-
-    Customer: Uh, let me see... It's 9876.
-
-    Agent: Alright, Mike. I've located your account. It looks like the email on file is indeed mike_johnston@yahoo.com. I'll send you a password reset link to that email address. You should receive it within the next few minutes.
-
-    Customer: Great, thank you so much for your help, Sarah!
-
-    Agent: You're very welcome, Mike. Have a great day!
-    """
-    return sample_transcript
-
-def extract_info(sample_transcript):
+def extract_info(transcript: str):
     system_prompt = (
         """
         Analyze the call transcript and extract relevant customer information that would typically be captured in a form.
-        Focus on extracting entities like names, addresses, phone numbers, email addresses, dates, and any other 
+        Focus on extracting entities like names, addresses, phone numbers, email addresses, dates, and any other
         specific details relevant to your forms.
 
-        Return the extracted information in a structured JSON format. 
+        Return the extracted information in a structured JSON format.
 
         Example JSON output:
         {{
@@ -55,9 +47,9 @@ def extract_info(sample_transcript):
             "address": "123 Main St, Anytown, CA 12345"
         }}
 
-        Ensure the extracted information is accurate and matches the context of the conversation. 
+        Ensure the extracted information is accurate and matches the context of the conversation.
 
-        If an entity is mentioned multiple times, prioritize the most recent or most complete instance. 
+        If an entity is mentioned multiple times, prioritize the most recent or most complete instance.
         If an entity cannot be confidently extracted, omit it from the JSON output.
         Ensure that your response ONLY includes the result JSON and no other text.
 
@@ -77,21 +69,25 @@ def extract_info(sample_transcript):
     chain = prompt | llm
 
     # Invoke the chain with the sample transcript
-    response = chain.invoke({"transcript": sample_transcript})
+    response = chain.invoke({"transcript": transcript})
 
-    return response
+    # Parse the response content to a dictionary
+    extracted_info = response.content
 
+    # Ensure the response is a dictionary
+    if isinstance(extracted_info, str):
+        extracted_info = eval(extracted_info)
+
+    return extracted_info
+
+@app.post("/extract_info", response_model=ExtractedInfo)
+def extract_info_endpoint(request: TranscriptRequest):
+    info = extract_info(request.transcript)
+    return info
 
 def main():
-    # Receive a text transcript of the audio file
-    sample_transcript = get_transcript()
+    uvicorn.run(app, port=8000)
 
-    # Process the text transcript to extract the relevant information
-    info = extract_info(sample_transcript)
-
-    # Return the extracted information as a JSON object
-    print(info.content)
-
-
-if __name__ == '__main__':
+#Run the app with Uvicorn
+if __name__ == "__main__":
     main()
