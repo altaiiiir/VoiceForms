@@ -14,11 +14,10 @@ Ensure you have reviewed the [Rules & FAQ](https://hackmidwest.com/#faq)
 ## Who's on your team?
 *List the full names,  email address & Github username of your teammates*
 
-1.   **Full Name**  || **fullname@company.com**  (or fullname@school.edu if you're a CS student) || **Github Username**
-2.   **Mohamed Alturfi** || faedq@yahoo.com || altaiiiir
-3.   **James Byars** || james@ernesttech.com || jamesbyars
-4.   **David Oliver** || david.oliver@springventuregroup.com || davidoliversvg
-5.   **Shane Funk** || shane.funk@springventuregroup.com || Shane Funk
+1.   **Mohamed Alturfi** || faedq@yahoo.com || altaiiiir
+2.   **James Byars** || james@ernesttech.com || jamesbyars
+3.   **David Oliver** || david.oliver@springventuregroup.com || davidoliversvg
+4.   **Shane Funk** || shane.funk@springventuregroup.com || Shane Funk
 
 <br /><br />
 
