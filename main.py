@@ -13,8 +13,29 @@ llm = ChatBedrock(
 
 
 def get_transcript():
-    sample_transcript = ("Hello, I'm Lisa from SVG. Can I get your first name please? Hi Lisa, this is Molly Thomas "
-                         "and I have some questions about my policy!")
+    sample_transcript = """
+    Agent: Hello, this is Sarah with ABC Insurance. How may I assist you today?
+
+    Customer: Hi Sarah, I'm having trouble logging into my online account.  I think I might've forgotten my password.
+
+    Agent: I can definitely help with that. Can I get your full name and date of birth to verify your account, please?
+
+    Customer: Sure, it's Michael... uh, actually it's Mike Johnson. And my birthday is April 12th, 1985.
+
+    Agent: Thank you, Mike. And what's the email address associated with your account? 
+
+    Customer: It should be mike.johnston85@gmail.com. Wait, no... I think it's mike_johnston@yahoo.com. 
+
+    Agent: No problem, we'll figure it out. Can you also provide the last four digits of your Social Security number for further verification?
+
+    Customer: Uh, let me see... It's 9876.
+
+    Agent: Alright, Mike. I've located your account. It looks like the email on file is indeed mike_johnston@yahoo.com. I'll send you a password reset link to that email address. You should receive it within the next few minutes.
+
+    Customer: Great, thank you so much for your help, Sarah!
+
+    Agent: You're very welcome, Mike. Have a great day!
+    """
     return sample_transcript
 
 def extract_info(sample_transcript):
