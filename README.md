@@ -15,29 +15,29 @@ Ensure you have reviewed the [Rules & FAQ](https://hackmidwest.com/#faq)
 *List the full names,  email address & Github username of your teammates*
 
 1.   **Full Name**  || **fullname@company.com**  (or fullname@school.edu if you're a CS student) || **Github Username**
-2. 
-3.
-4.
-5.
+2.   **Mohamed Alturfi** || faedq@yahoo.com || altaiiiir
+3.   **James Byars** || james@ernesttech.com || jamesbyars
+4.   **David Oliver** || david.oliver@springventuregroup.com || davidoliversvg
+5.   **Shane Funk** || shane.funk@springventuregroup.com || Shane Funk
 
 <br /><br />
 
 
 ## What is the name of your App?
-
+Voice Forms
 <br /><br />
 ## What does your app do?
 *Describe in a paragraph or so*
-
+This application processes voice conversations, transcribing audio and using generative AI to extract key information like customer names and emails. It automates form filling by allowing agents to populate fields simply by asking clients questions. Leveraging AWS services, it provides real-time insights and structured data storage, enhancing customer interaction and support.
 <br /><br />
 
 
 ## What challenges are you building for? SELECT ALL THAT APPLY
 *See hackmidwest.com/#prizes for challenge details*
 - [ ]  Pinata Challenge
-- [ ]  Pinata AI Challenge
-- [ ]  Pinata Enterprise Challenge
-- [ ]  AWS Bedrock Challenge
+- [X]  Pinata AI Challenge
+- [X]  Pinata Enterprise Challenge
+- [X]  AWS Bedrock Challenge
 - [ ]  Red Hat | Intel AI Challenge
 - [ ]  Zoom Challenge
 - [ ]  USDA Challenge
