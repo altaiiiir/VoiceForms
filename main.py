@@ -8,7 +8,6 @@ model_id = "anthropic.claude-3-5-sonnet-20240620-v1:0"
 llm = ChatBedrock(
     model_id=model_id,
     model_kwargs={"temperature": 1},
-    streaming=True,
 )
 
 
