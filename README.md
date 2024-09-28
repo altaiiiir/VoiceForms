@@ -26,7 +26,6 @@ Ensure you have reviewed the [Rules & FAQ](https://hackmidwest.com/#faq)
 Voice Forms
 <br /><br />
 ## What does your app do?
-*Describe in a paragraph or so*
 This application processes voice conversations, transcribing audio and using generative AI to extract key information like customer names and emails. It automates form filling by allowing agents to populate fields simply by asking clients questions. Leveraging AWS services, it provides real-time insights and structured data storage, enhancing customer interaction and support.
 <br /><br />
 
