@@ -49,15 +49,15 @@ const startStreaming = async (language, callback) => {
         AudioStream: getAudioStream(),
         ShowSpeakerLabel: true,
         EnablePartialResultsStabilization: true,
-        PartialResultsStability: 'high',
+        PartialResultsStability: 'medium',
     });
     const data = await transcribeClient.send(command);
     for await (const event of data.TranscriptResultStream) {
         const results = event.TranscriptEvent.Transcript.Results;
         if (results.length && !results[0]?.IsPartial) {
-            console.log('Results: ', results)
+            // console.log('Results: ', results)
             const newTranscript = results[0].Alternatives[0].Transcript;
-            // console.log(newTranscript);
+            console.log(newTranscript);
             callback(newTranscript + " ");
         }
     }
