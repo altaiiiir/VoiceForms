@@ -14,8 +14,8 @@ Ensure you have reviewed the [Rules & FAQ](https://hackmidwest.com/#faq)
 ## Who's on your team?
 *List the full names,  email address & Github username of your teammates*
 
-1.   **Mohamed Alturfi** || faedq@yahoo.com || altaiiiir
-2.   **James Byars** || james@ernesttech.com || jamesbyars
+1.   **Mohamed Alturfi** || mohamed.alturfi@springventuregroup.com || MohamedAlturfiSVG
+2.   **James Byars** || james.byars@springventuregroup.com || jamesbyars-svg
 3.   **David Oliver** || david.oliver@springventuregroup.com || davidoliversvg
 4.   **Shane Funk** || shane.funk@springventuregroup.com || Shane Funk
 
