@@ -5,33 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Realtime Audio Transcription</title>
     <link href="./assets/css/output.css" rel="stylesheet">
+    <style>
+        #reason {
+            border-width: 4px;
+            padding-left: 4px;
+        }
+        #transcription {
+            display: none;
+        }
+        #modelResponse {
+            display: none;
+        }
+        .top-article {
+            max-width: 390px;
+            margin: 30px auto;
+        }
+    </style>
 </head>
 <body>
-<article class="prose m-4">
-    <h2 class="p-2 mb-0">Customer Relationship Management</h2>
+<article class="prose m-4 top-article">
+    <h2 class="p-2 mb-0">Customer Relationship System</h2>
     <h3 class="p-2">Legal Mortgages</h3>
-    <div class="card bg-neutral-content w-600 p-2">Lead: Jeremy Leeds</div>
+    <div id="fullName" class="card bg-neutral-content p-2">Lead:</div>
     <div class="mt-4">
         <button id="toggleRecordingButton" class="btn btn-secondary">Start Listening</button>
     </div>
-    <div class="card bg-neutral w-600 shadow-xl my-4 py-2">
+    <div class="card bg-neutral w-400 shadow-xl my-4 py-2">
         <div class="card-body">
             <form>
                 <div class="form-control">
                     <label class="label">First Name</label>
-                    <input type="text" name="first_name" class="input input-bordered w-full max-w-xs">
+                    <input id="firstName" type="text" name="first_name" class="input input-bordered w-full max-w-xs">
                 </div>
                 <div class="form-control">
                     <label class="label">Last Name</label>
-                    <input type="text" name="last_name" class="input input-bordered w-full max-w-xs">
+                    <input id="lastName" type="text" name="last_name" class="input input-bordered w-full max-w-xs">
                 </div>
                 <div class="form-control">
                     <label class="label">Email</label>
-                    <input type="email" name="email" class="input input-bordered w-full max-w-xs">
+                    <input id="email" type="email" name="email" class="input input-bordered w-full max-w-xs">
                 </div>
                 <div class="form-control">
                     <label class="label">Phone Number</label>
-                    <input type="tel" name="phone" class="input input-bordered w-full max-w-xs">
+                    <input id="phone" type="tel" name="phone" class="input input-bordered w-full max-w-xs">
+                </div>
+                <div class="form-control">
+                    <label class="label">Reason for call</label>
+                    <textarea id="reason" name="reason" class="textarea textarea-bordered border-2 bg-primary w-full max-w-xs"></textarea>
                 </div>
             </form>
             <div class="card-actions justify-end mt-4">
@@ -47,56 +67,12 @@
 
 
 <div id="transcription"></div>
+
+<div id="modelResponse"></div>
+
 <script src="./bundle.js"></script>
 
 </body>
 <script>
-// const startButton = document.getElementById("start");
-// const stopButton = document.getElementById("stop");
-// const transcriptionDiv = document.getElementById("transcription");
-// const toggleRecordingButton = document.getElementById("toggleRecordingButton");
-// let recordingNow = false;
-//
-// let transcription = "";
-//
-// const toggleRecording = async () => {
-//     console.log("toggleRecording:" + recordingNow);
-//     if (recordingNow) {
-//         toggleRecordingButton.textContent = "Start Listening";
-//         await startButtonAction();
-//     } else {
-//         toggleRecordingButton.textContent = "Stop Listening";
-//         stopButtonAction();
-//     }
-//     recordingNow = !recordingNow;
-// }
-//
-// const startButtonAction = async () => {
-//     await startRecording((text) => {
-//         transcription += text;
-//         transcriptionDiv.innerHTML = transcription;
-//     });
-// }
-//
-// const stopButtonAction = () => {
-//     stopRecording();
-//     transcription = "";
-//     transcriptionDiv.innerHTML = "";
-// }
-//
-// toggleRecordingButton.addEventListener("click", toggleRecording);
-
-// startButton.addEventListener("click", async () => {
-//     await startRecording((text) => {
-//         transcription += text;
-//         transcriptionDiv.innerHTML = transcription;
-//     });
-// });
-//
-// stopButton.addEventListener("click", () => {
-//     stopRecording();
-//     transcription = "";
-//     transcriptionDiv.innerHTML = "";
-// });
 </script>
 </html>

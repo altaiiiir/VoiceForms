@@ -1,3 +1,5 @@
+node_modules/
+frontend/node_modules/
 /package-lock.json
 /.idea/inspectionProfiles/profiles_settings.xml
 /.idea/inspectionProfiles/Project_Default.xml
@@ -9,3 +11,4 @@
 /.idea/vcs.xml
 /.idea/VoiceForms.iml
 /node_modules/*
+venv/
