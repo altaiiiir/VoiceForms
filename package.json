@@ -16,10 +16,12 @@
   },
   "dependencies": {
     "@aws-sdk/client-bedrock-runtime": "^3.651.1",
+    "@aws-sdk/client-polly": "^3.651.1",
     "@aws-sdk/client-transcribe-streaming": "^3.651.1",
+    "@aws-sdk/polly-request-presigner": "^3.658.1",
     "buffer": "^6.0.3",
     "microphone-stream": "^6.0.1",
-    "process": "^0.11.10",
-    "pinata": "^1.4.1"
+    "pinata": "^1.4.1",
+    "process": "^0.11.10"
   }
 }

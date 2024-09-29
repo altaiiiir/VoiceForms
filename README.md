@@ -41,7 +41,7 @@ This application processes voice conversations, transcribing audio and using gen
 
 ## What challenges are you building for? SELECT ALL THAT APPLY
 *See hackmidwest.com/#prizes for challenge details*
-- [ ]  Pinata Challenge
+- [X]  Pinata Challenge
 - [X]  Pinata AI Challenge
 - [X]  Pinata Enterprise Challenge
 - [X]  AWS Bedrock Challenge

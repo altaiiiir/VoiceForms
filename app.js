@@ -3,6 +3,14 @@ import MicrophoneStream from "microphone-stream";
 import {Buffer} from "buffer";
 import {BedrockRuntimeClient, ConverseCommand} from "@aws-sdk/client-bedrock-runtime";
 import {PinataSDK} from "pinata";
+import {PollyClient} from "@aws-sdk/client-polly";
+import {getSynthesizeSpeechUrl} from "@aws-sdk/polly-request-presigner";
+
+
+const AWS_DEFAULT_REGION="us-west-2"
+const AWS_ACCESS_KEY_ID="ASIAVZI3N252Z35T4KMW"
+const AWS_SECRET_ACCESS_KEY="dM06m/bVf4LIDHuUoKr11ppT1h8B2QOMLfRdyagm"
+const AWS_SESSION_TOKEN="IQoJb3JpZ2luX2VjEBEaCXVzLWVhc3QtMSJHMEUCIQDL4f9xVzWPX8Ufuh4V1LgiTtO+GCX+dDYnDZofDeembAIga2jH6bxEjLC/PAH/U6XL67laiz3/n3Ycx8vylQcURVcqmQIIWhACGgwzOTc4Nzg4NzYwMjEiDHyMY1I30p6mtmHbEyr2AUFMtoqK1S+oLL3vPEy9WRrnMI4bu+L5qDTQbLvqrM31HIV5F0l21GdSMztPuogh9Quvb/ZEV7RQ5cGdnDP9U7E2+HoKscZtFPqPQlieYlV52VK7wXXK0wUTVzl20LVtEo3xeFp0TJlvLI6ZIZBEDbyJis6RSL7u/Gq5hL5O3twuzrU5JbxfSm5y3Nlc4aZU4Tsy/NhVKG/B1HYkVRx0pi3SpvF/TQ/Lvgafovd3c9nWr6zSoOrdOq+P9G9ekaZcpDyZKGsVInzFUBSiLzA6wCQmI2OAUU5xprJ6hH47RK3E9BaOmzDPGg7UI6mTapP1ZQc4yvuYpDD2ruS3BjqdAQCdST0ihFHh1CAGOVIvHyuuUT4cposdtgNrCEqFjbH8jz6iOFK0dz9fcPTymbv0kK/H0nOPLCOwQFzyzm8A+OMNDYWY50w1oV9HQwHF8mre2ZR7J7clDA3tZFvR0e2zwopajclbvRfVLhjopBSfHNJ0VvU/rv/yQu/0ghkmfpTVEiGDezAUxwWCYg46Rmw9Xrg8M6abe2PBPz/myuk="
 
 let microphoneStream = undefined;
 const language = "en-US";
@@ -79,9 +87,9 @@ const createTranscribeClient = () => {
     transcribeClient = new TranscribeStreamingClient({
         region: 'us-west-2',
         credentials: {
-            accessKeyId: 'ASIAVZI3N25247CFELPS',
-            secretAccessKey: 'pAwBiKAsqJNSmtkGvG/sMKiPyEGZrkEEzleL52Jv',
-            sessionToken: 'IQoJb3JpZ2luX2VjEAUaCXVzLWVhc3QtMSJHMEUCIQD9kWxM0iX282z6G16dcYZmp2A8dpa+33u40xEQej7sLwIgL0qZ+RSpAvwKviHQdESP4uDWfAkvdTQ74LZv6rPoO1IqmQIIThACGgwzOTc4Nzg4NzYwMjEiDHpSstR8F2yi/8SbPCr2AUjzTgFqtQmy+B0AYU/t5sdjVYBPTVTN8g4gywt12vd6RECn8GtZGz846rZbbcmuRcREsFDo8LMaSDUt8QHX137LMBKBewoTWsvycMVncJr0LJ7V2ZQQ30U6YIc+5vr9aNNwZEZfMgyahlATd6dWMNqjlDVpxvxMa2BlumMtkqonMLDCaQnOzYLOtMJ0u0GlIW3PdHOiarCrlioWbh0YK0u10wVgKO3jT5HbSHxllv7d8HedM5pQUPpZkRAqkfT/AdiJqtK6kQ9sHXgQMUM3zeZeS1Z3//0h37FGqrZw/N7PGzUgFGH2kB5IbN2Wwg2tbO+FinJR9zDX2uG3BjqdAdCWcy1Ti5Qy4wQIp+cITXBFYJR7w25q9pi+eQMpxcKRaIwjCn7oI45KP1CWVI6b1NXB2Ry2+HRsgiLNikSqtO1yrZiACpuEhcKQWnpQT0d89jmIfsgwa12KraYtFLscG7K8ve0Qswt7bE8lAOJ/OXP7LhTi7iuWefn05WuD+nptearbljpLb4kHfI2Eor4a5l90wonPwYZ5ncvHqro='
+            accessKeyId: AWS_ACCESS_KEY_ID,
+            secretAccessKey: AWS_SECRET_ACCESS_KEY,
+            sessionToken: AWS_SESSION_TOKEN
         },
     });
 };
@@ -101,8 +109,6 @@ const stopRecording = async function () {
 };
 
 // === FRONTEND ===
-// const startButton = document.getElementById("start");
-// const stopButton = document.getElementById("stop");
 const transcriptionDiv = document.getElementById("transcription");
 const modelResponseDiv = document.getElementById("modelResponse");
 
@@ -125,6 +131,7 @@ let formModel = {
     "phone_number": "",
     "email": "",
     "reason_for_call": "",
+    "next_utterance": ""
 }
 
 const toggleRecording = async () => {
@@ -148,10 +155,12 @@ const toggleRecording = async () => {
 toggleRecordingButton.addEventListener("click", toggleRecording);
 
 const startButtonAction = async () => {
+
+    // await speakText("Thank you for calling ACME. What is your name?")
+
     await startRecording((text) => {
 
         invokeModel(text, formModel).then((response) => {
-            // console.log('invokeModel(..).then()', response);
 
             if (response.first_name !== "") {
                 formModel.first_name = response.first_name;
@@ -167,6 +176,9 @@ const startButtonAction = async () => {
             }
             if (response.reason_for_call !== "") {
                 formModel.reason_for_call = response.reason_for_call;
+            }
+            if (response.next_utterance !== "") {
+                formModel.next_utterance = response.next_utterance;
             }
 
             model_responses += `Bot: ${response}<br>`;
@@ -184,6 +196,9 @@ const startButtonAction = async () => {
         transcription += `Human: ${text}\n`;
         transcriptionDiv.innerHTML = transcription;
         console.log("Transcription(full current): ", transcription);
+
+        // console.log('FormModel.next_utterance: ', formModel.next_utterance);
+        // speakText(formModel.next_utterance);
     });
 }
 
@@ -225,9 +240,9 @@ const showCallRatings = (ratings) => {
 const client = new BedrockRuntimeClient({
     region: 'us-west-2',
     credentials: {
-        accessKeyId: 'ASIAVZI3N25247CFELPS',
-        secretAccessKey: 'pAwBiKAsqJNSmtkGvG/sMKiPyEGZrkEEzleL52Jv',
-        sessionToken: 'IQoJb3JpZ2luX2VjEAUaCXVzLWVhc3QtMSJHMEUCIQD9kWxM0iX282z6G16dcYZmp2A8dpa+33u40xEQej7sLwIgL0qZ+RSpAvwKviHQdESP4uDWfAkvdTQ74LZv6rPoO1IqmQIIThACGgwzOTc4Nzg4NzYwMjEiDHpSstR8F2yi/8SbPCr2AUjzTgFqtQmy+B0AYU/t5sdjVYBPTVTN8g4gywt12vd6RECn8GtZGz846rZbbcmuRcREsFDo8LMaSDUt8QHX137LMBKBewoTWsvycMVncJr0LJ7V2ZQQ30U6YIc+5vr9aNNwZEZfMgyahlATd6dWMNqjlDVpxvxMa2BlumMtkqonMLDCaQnOzYLOtMJ0u0GlIW3PdHOiarCrlioWbh0YK0u10wVgKO3jT5HbSHxllv7d8HedM5pQUPpZkRAqkfT/AdiJqtK6kQ9sHXgQMUM3zeZeS1Z3//0h37FGqrZw/N7PGzUgFGH2kB5IbN2Wwg2tbO+FinJR9zDX2uG3BjqdAdCWcy1Ti5Qy4wQIp+cITXBFYJR7w25q9pi+eQMpxcKRaIwjCn7oI45KP1CWVI6b1NXB2Ry2+HRsgiLNikSqtO1yrZiACpuEhcKQWnpQT0d89jmIfsgwa12KraYtFLscG7K8ve0Qswt7bE8lAOJ/OXP7LhTi7iuWefn05WuD+nptearbljpLb4kHfI2Eor4a5l90wonPwYZ5ncvHqro='
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        sessionToken: AWS_SESSION_TOKEN
     },
 });
 
@@ -245,7 +260,10 @@ const systemPrompt = `
             "phone_number": "+1-555-123-4567",
             "email": "john.doe@example.com",
             "reason_for_call": "Help with my account"
+            "next_utterance": "The next thing the bot should say to fill out this form"
         }
+        
+        NEVER RETURN THESE EXAMPLE VALUES.
 
         Ensure the extracted information is accurate and matches the context of the conversation.
 
@@ -260,7 +278,8 @@ const systemPrompt = `
             "last_name": "Doe",
             "phone_number": "+1-555-123-4567",
             "email": "john.doe@example.com",
-            "reason_for_call": "Help with my account"
+            "reason_for_call": "Help with my account",
+            "next_utterance": "The next thing the bot should say to fill out this form"
         }
         
         If you are unable to extract any information, return the form with empty strings as values, for example:
@@ -269,8 +288,11 @@ const systemPrompt = `
             "last_name": "",
             "phone_number": "",
             "email": "",
-            "reason_for_call": ""
+            "reason_for_call": "",
+            "next_utterance": "",
         }
+        
+        Ideally, unless the form is complete, the next utterance should prompt the user for the missing information.
 
         Here's the call transcript:  
         `;
@@ -315,9 +337,6 @@ async function invokeModel(prompt, formModel) {
     try {
         // Send the request and await the response
         const response = await client.send(command);
-
-        // Process the response
-        // JSON.parse()
         const generatedText = await JSON.parse(response.output.message.content[0].text);
         console.log('Generated for InvokeModel: ', generatedText);
 
@@ -448,3 +467,48 @@ async function evaluateTranscript(transcript) {
     }
 }
 
+
+// Initialize the Polly client
+const pollyClient = new PollyClient({
+    region: 'us-west-2',
+    credentials: {
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        sessionToken: AWS_SESSION_TOKEN
+    },
+});
+
+const speechParams = {
+    OutputFormat: "mp3",
+    Text: "",
+    VoiceId: "Matthew",
+    SampleRate: "16000",
+    Engine: "neural",
+}
+
+const synthesizeSpeech = async (text) => {
+    speechParams.Text = text;
+    console.log('speechParams', speechParams)
+
+    try {
+        let url = await getSynthesizeSpeechUrl({
+            client: pollyClient,
+            params: speechParams,
+        });
+
+        return url;
+
+    } catch (error) {
+        console.error("Error synthesizing speech:", error);
+    }
+};
+
+async function speakText(text) {
+    console.log('speakText: ', text)
+    const audioUrl = await synthesizeSpeech(text);
+    console.log('audioUrl: ', audioUrl)
+
+    document.getElementById("audioSource").src = audioUrl;
+    document.getElementById("audioPlayback").load();
+    document.getElementById("audioPlayback").play()
+}
