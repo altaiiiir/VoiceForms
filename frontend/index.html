@@ -4,16 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Realtime Audio Transcription</title>
+    <link href="./assets/css/output.css" rel="stylesheet">
 </head>
 <body>
+<article class="prose m-4">
+    <h2 class="p-2 mb-0">Customer Relationship Management</h2>
+    <h3 class="p-2">Legal Mortgages</h3>
+    <div class="card bg-neutral-content w-600 p-2">Lead: Jeremy Leeds</div>
+    <div class="mt-4">
+        <button id="toggleRecordingButton" class="btn btn-secondary">Start Listening</button>
+    </div>
+    <div class="card bg-neutral w-600 shadow-xl my-4 py-2">
+        <div class="card-body">
+            <form>
+                <div class="form-control">
+                    <label class="label">First Name</label>
+                    <input type="text" name="first_name" class="input input-bordered w-full max-w-xs">
+                </div>
+                <div class="form-control">
+                    <label class="label">Last Name</label>
+                    <input type="text" name="last_name" class="input input-bordered w-full max-w-xs">
+                </div>
+                <div class="form-control">
+                    <label class="label">Email</label>
+                    <input type="email" name="email" class="input input-bordered w-full max-w-xs">
+                </div>
+                <div class="form-control">
+                    <label class="label">Phone Number</label>
+                    <input type="tel" name="phone" class="input input-bordered w-full max-w-xs">
+                </div>
+            </form>
+            <div class="card-actions justify-end mt-4">
+                <button class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</article>
 
 
-<button id="start">Start Recording</button>
-<button id="stop">Stop Recording</button>
+<!--<button id="start">Start Recording</button>-->
+<!--<button id="stop">Stop Recording</button>-->
 
 
 <div id="transcription"></div>
 <script src="./bundle.js"></script>
 
 </body>
+<script>
+// const startButton = document.getElementById("start");
+// const stopButton = document.getElementById("stop");
+// const transcriptionDiv = document.getElementById("transcription");
+// const toggleRecordingButton = document.getElementById("toggleRecordingButton");
+// let recordingNow = false;
+//
+// let transcription = "";
+//
+// const toggleRecording = async () => {
+//     console.log("toggleRecording:" + recordingNow);
+//     if (recordingNow) {
+//         toggleRecordingButton.textContent = "Start Listening";
+//         await startButtonAction();
+//     } else {
+//         toggleRecordingButton.textContent = "Stop Listening";
+//         stopButtonAction();
+//     }
+//     recordingNow = !recordingNow;
+// }
+//
+// const startButtonAction = async () => {
+//     await startRecording((text) => {
+//         transcription += text;
+//         transcriptionDiv.innerHTML = transcription;
+//     });
+// }
+//
+// const stopButtonAction = () => {
+//     stopRecording();
+//     transcription = "";
+//     transcriptionDiv.innerHTML = "";
+// }
+//
+// toggleRecordingButton.addEventListener("click", toggleRecording);
+
+// startButton.addEventListener("click", async () => {
+//     await startRecording((text) => {
+//         transcription += text;
+//         transcriptionDiv.innerHTML = transcription;
+//     });
+// });
+//
+// stopButton.addEventListener("click", () => {
+//     stopRecording();
+//     transcription = "";
+//     transcriptionDiv.innerHTML = "";
+// });
+</script>
 </html>

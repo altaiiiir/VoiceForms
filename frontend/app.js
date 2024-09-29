@@ -92,21 +92,56 @@ const stopRecording = function () {
     }
 };
 
+// === FRONTEND ===
 const startButton = document.getElementById("start");
 const stopButton = document.getElementById("stop");
 const transcriptionDiv = document.getElementById("transcription");
 
+const toggleRecordingButton = document.getElementById("toggleRecordingButton");
+let recordingNow = false;
+
 let transcription = "";
 
-startButton.addEventListener("click", async () => {
+const toggleRecording = async () => {
+    console.log("toggleRecording: RecordingNow is" + recordingNow);
+    if (recordingNow) {
+        console.log("toggleRecording - stopping");
+        stopButtonAction();
+        console.log("toggleRecording - stopping after");
+        toggleRecordingButton.textContent = "Start Listening";
+    } else {
+        console.log("toggleRecording - starting");
+        toggleRecordingButton.textContent = "Stop Listening";
+        startButtonAction().then(() => {console.log("toggleRecording - starting then")});
+        console.log("toggleRecording - starting after");
+    }
+    recordingNow = !recordingNow;
+}
+
+toggleRecordingButton.addEventListener("click", toggleRecording);
+
+const startButtonAction = async () => {
     await startRecording((text) => {
         transcription += text;
         transcriptionDiv.innerHTML = transcription;
     });
-});
+}
 
-stopButton.addEventListener("click", () => {
+const stopButtonAction = () => {
     stopRecording();
     transcription = "";
     transcriptionDiv.innerHTML = "";
-});
+}
+
+// startButton.addEventListener("click", async () => {
+//     await startRecording((text) => {
+//         transcription += text;
+//         transcriptionDiv.innerHTML = transcription;
+//     });
+// });
+//
+// stopButton.addEventListener("click", () => {
+//     stopRecording();
+//     transcription = "";
+//     transcriptionDiv.innerHTML = "";
+// });
