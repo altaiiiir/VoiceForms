@@ -2,28 +2,28 @@ const path = require("path");
 const webpack = require("webpack");
 
 module.exports = {
-  entry: "./app.js",
-  output: {
-    filename: "./bundle.js",
-    path: path.resolve(__dirname, "."),
-  },
-  resolve: {
-    fallback: {
-      buffer: require.resolve("buffer/"), // Polyfill buffer
-      process: require.resolve("process/browser"), // Polyfill process
+    entry: "./app.js",
+    output: {
+        filename: "./bundle.js",
+        path: path.resolve(__dirname, "."),
     },
-  },
-  plugins: [
-    new webpack.ProvidePlugin({
-      Buffer: ["buffer", "Buffer"], // Provide Buffer globally
-      process: "process/browser", // Provide process globally
-    }),
-  ],
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "/"),
+    resolve: {
+        fallback: {
+            buffer: require.resolve("buffer/"), // Polyfill buffer
+            process: require.resolve("process/browser"), // Polyfill process
+        },
     },
-    port: 3000,
-  },
-  mode: "development",
+    plugins: [
+        new webpack.ProvidePlugin({
+            Buffer: ["buffer", "Buffer"], // Provide Buffer globally
+            process: "process/browser", // Provide process globally
+        }),
+    ],
+    devServer: {
+        static: {
+            directory: path.join(__dirname, "/"),
+        },
+        port: 3000,
+    },
+    mode: "development",
 };

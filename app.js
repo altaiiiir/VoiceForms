@@ -2,6 +2,7 @@ import {StartStreamTranscriptionCommand, TranscribeStreamingClient,} from "@aws-
 import MicrophoneStream from "microphone-stream";
 import {Buffer} from "buffer";
 import {BedrockRuntimeClient, ConverseCommand} from "@aws-sdk/client-bedrock-runtime";
+import {PinataSDK} from "pinata";
 
 let microphoneStream = undefined;
 const language = "en-US";
@@ -84,13 +85,17 @@ const createTranscribeClient = () => {
         },
     });
 };
-
-const stopRecording = function () {
+const stopRecording = async function () {
     if (microphoneStream) {
         microphoneStream.stop();
         microphoneStream.destroy();
         microphoneStream = undefined;
     }
+
+    let cid = await uploadFileToPinata()
+    let transcript = await getByCid(cid);
+    let evaluation = await evaluateTranscript(transcript)
+
 };
 
 // === FRONTEND ===
@@ -100,7 +105,6 @@ const transcriptionDiv = document.getElementById("transcription");
 const modelResponseDiv = document.getElementById("modelResponse");
 
 const fullNameInput = document.getElementById("fullName");
-console.log("fullNameInput", fullNameInput)
 const firstNameInput = document.getElementById("firstName");
 const lastNameInput = document.getElementById("lastName");
 const phoneNumberInput = document.getElementById("phone");
@@ -131,7 +135,9 @@ const toggleRecording = async () => {
     } else {
         console.log("toggleRecording - starting");
         toggleRecordingButton.textContent = "Stop Listening";
-        startButtonAction().then(() => {console.log("toggleRecording - starting then")});
+        startButtonAction().then(() => {
+            console.log("toggleRecording - starting then")
+        });
         console.log("toggleRecording - starting after");
     }
     recordingNow = !recordingNow;
@@ -173,7 +179,7 @@ const startButtonAction = async () => {
             reasonForCallInput.value = formModel.reason_for_call;
         });
 
-        transcription += `Human: ${text}<br>`;
+        transcription += `Human: ${text}\n`;
         transcriptionDiv.innerHTML = transcription;
         console.log("Transcription(full current): ", transcription);
     });
@@ -237,7 +243,6 @@ const systemPrompt = `
             "email": "",
             "reason_for_call": ""
         }
-        
 
         Here's the call transcript:  
         `;
@@ -261,6 +266,125 @@ async function invokeModel(prompt, formModel) {
                         },
                         {
                             text: prompt,
+                        },
+                    ],
+                },
+            ],
+            inferenceConfig: {
+                maxTokens: 1000,
+                temperature: 0.7,
+                topP: 1,
+            },
+            // system prompt not supported for Haiku
+            // system: [
+            //     {
+            //         text: "You are responsible for extracting the French translation from the model's response.",
+            //     },
+            // ],
+        }
+    );
+
+    try {
+        // Send the request and await the response
+        const response = await client.send(command);
+
+        // Process the response
+        // JSON.parse()
+        const generatedText = await JSON.parse(response.output.message.content[0].text);
+        console.log('Generated: ', generatedText);
+
+        return generatedText;
+    } catch (error) {
+        console.error("Error invoking Bedrock model:", error);
+    }
+}
+
+
+const pinata = new PinataSDK({
+    pinataJwt: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiIzYjE4ZWYxYS1hNThiLTQyODYtYmExMy1jODk1MDFmZDk1NWQiLCJlbWFpbCI6ImphbWVzLmJ5YXJzQHNwcmluZ3ZlbnR1cmVncm91cC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJGUkExIn0seyJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MSwiaWQiOiJOWUMxIn1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZmUzMDNkZmVjYWE1MGVkZGE5MTgiLCJzY29wZWRLZXlTZWNyZXQiOiJkOWNkMjhiZDdlOTBlMzA5Mzk4YjgxM2ZkMzdhOWZmNGVjYjg2NzRiNzRhOTU5ZGEwYzc4ZGIyNDNhNWI2OWRkIiwiZXhwIjoxNzU5MDcwNzAyfQ.9x3_QVMDGKv5LaQovVR1PdK4Sdsy8Rw_eXEWENh6BRQ",
+    pinataGateway: "amber-kind-cuckoo-112.mypinata.cloud",
+});
+
+// let cid = "";
+
+async function uploadFileToPinata() {
+    try {
+        const timestamp = new Date().toISOString();
+
+        const file = new File([transcriptionDiv.innerHTML], `${timestamp}.txt`, {type: "text/plain"});
+        const upload = await pinata.upload.file(file);
+        let cid = upload.cid;
+        console.log(upload);
+        return cid
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function getByCid(cid) {
+    try {
+        const retrievedFile = await fetch(`http://localhost:8080/content/${cid}`);
+
+        const reader = retrievedFile.body.getReader();
+        const decoder = new TextDecoder();
+        let result = '';
+        let done = false;
+
+        while (!done) {
+            const {value, done: streamDone} = await reader.read();
+            done = streamDone;
+            if (value) {
+                result += decoder.decode(value, {stream: true});
+            }
+        }
+
+        console.log(result);
+        return result;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function evaluateTranscript(transcript) {
+    const command = new ConverseCommand({
+            modelId: modelId,
+            messages: [
+                {
+                    role: "user",
+                    content: [
+                        {
+                            text: `You are a conversation evaluator responsible for evaluating a call transcript and
+                                judging the systems performance at recognizing and extracting customer information.
+                                
+                                Reply with an evaluation of the systems speed, accuracy, and overall performance. Each 
+                                of these metrics should be on a scale of 1 to 100 with 100 being the highest.
+                                
+                                You will also need to provide a summary of the positives and opportunities for improvement. Use
+                                the extracted information to support your evaluation.
+                                
+                                Compute an overall sentiment score for the conversation using the customer transcript.
+                                
+                                Return the computed information in a structured JSON format.
+
+                                Example JSON output:
+                                {
+                                    speed: integer,
+                                    accuracy: integer,
+                                    overall: integer,
+                                    positives: string,
+                                    opportunities: string,
+                                    sentiment: integer,
+                                }
+                                
+                                Ensure the extracted information is accurate and matches the context of the conversation.
+
+                                 Ensure that your response ONLY includes the result JSON and no other text.
+                                
+                                The customers transcript is as follows: `,
+                        },
+
+                        {
+                            text: transcript,
                         },
                     ],
                 },
