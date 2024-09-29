@@ -1,4 +1,10 @@
-# Welcome to Hack Midwest 2024!
+# VoiceForms instructions
+
+## Running tailwindcss
+When developing css locally, you must run the command: 
+
+npm run buildcss
+
 <br /><br />
 
 
