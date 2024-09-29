@@ -47,7 +47,7 @@ This application processes voice conversations, transcribing audio and using gen
 - [X]  AWS Bedrock Challenge
 - [ ]  Red Hat | Intel AI Challenge
 - [ ]  Zoom Challenge
-- [ ]  USDA Challenge
+- [X]  USDA Challenge
 - [ ]  brAIn Rot Challenge
 
 
