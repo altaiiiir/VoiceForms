@@ -5,12 +5,13 @@ import {BedrockRuntimeClient, ConverseCommand} from "@aws-sdk/client-bedrock-run
 import {PinataSDK} from "pinata";
 import {PollyClient} from "@aws-sdk/client-polly";
 import {getSynthesizeSpeechUrl} from "@aws-sdk/polly-request-presigner";
+import {BedrockAgentRuntimeClient} from "@aws-sdk/client-bedrock-agent-runtime"; // ES Modules import
 
 
-const AWS_DEFAULT_REGION="us-west-2"
-const AWS_ACCESS_KEY_ID="ASIAVZI3N252Z35T4KMW"
-const AWS_SECRET_ACCESS_KEY="dM06m/bVf4LIDHuUoKr11ppT1h8B2QOMLfRdyagm"
-const AWS_SESSION_TOKEN="IQoJb3JpZ2luX2VjEBEaCXVzLWVhc3QtMSJHMEUCIQDL4f9xVzWPX8Ufuh4V1LgiTtO+GCX+dDYnDZofDeembAIga2jH6bxEjLC/PAH/U6XL67laiz3/n3Ycx8vylQcURVcqmQIIWhACGgwzOTc4Nzg4NzYwMjEiDHyMY1I30p6mtmHbEyr2AUFMtoqK1S+oLL3vPEy9WRrnMI4bu+L5qDTQbLvqrM31HIV5F0l21GdSMztPuogh9Quvb/ZEV7RQ5cGdnDP9U7E2+HoKscZtFPqPQlieYlV52VK7wXXK0wUTVzl20LVtEo3xeFp0TJlvLI6ZIZBEDbyJis6RSL7u/Gq5hL5O3twuzrU5JbxfSm5y3Nlc4aZU4Tsy/NhVKG/B1HYkVRx0pi3SpvF/TQ/Lvgafovd3c9nWr6zSoOrdOq+P9G9ekaZcpDyZKGsVInzFUBSiLzA6wCQmI2OAUU5xprJ6hH47RK3E9BaOmzDPGg7UI6mTapP1ZQc4yvuYpDD2ruS3BjqdAQCdST0ihFHh1CAGOVIvHyuuUT4cposdtgNrCEqFjbH8jz6iOFK0dz9fcPTymbv0kK/H0nOPLCOwQFzyzm8A+OMNDYWY50w1oV9HQwHF8mre2ZR7J7clDA3tZFvR0e2zwopajclbvRfVLhjopBSfHNJ0VvU/rv/yQu/0ghkmfpTVEiGDezAUxwWCYg46Rmw9Xrg8M6abe2PBPz/myuk="
+const AWS_DEFAULT_REGION = "us-west-2"
+const AWS_ACCESS_KEY_ID = "ASIAVZI3N252Z35T4KMW"
+const AWS_SECRET_ACCESS_KEY = "dM06m/bVf4LIDHuUoKr11ppT1h8B2QOMLfRdyagm"
+const AWS_SESSION_TOKEN = "IQoJb3JpZ2luX2VjEBEaCXVzLWVhc3QtMSJHMEUCIQDL4f9xVzWPX8Ufuh4V1LgiTtO+GCX+dDYnDZofDeembAIga2jH6bxEjLC/PAH/U6XL67laiz3/n3Ycx8vylQcURVcqmQIIWhACGgwzOTc4Nzg4NzYwMjEiDHyMY1I30p6mtmHbEyr2AUFMtoqK1S+oLL3vPEy9WRrnMI4bu+L5qDTQbLvqrM31HIV5F0l21GdSMztPuogh9Quvb/ZEV7RQ5cGdnDP9U7E2+HoKscZtFPqPQlieYlV52VK7wXXK0wUTVzl20LVtEo3xeFp0TJlvLI6ZIZBEDbyJis6RSL7u/Gq5hL5O3twuzrU5JbxfSm5y3Nlc4aZU4Tsy/NhVKG/B1HYkVRx0pi3SpvF/TQ/Lvgafovd3c9nWr6zSoOrdOq+P9G9ekaZcpDyZKGsVInzFUBSiLzA6wCQmI2OAUU5xprJ6hH47RK3E9BaOmzDPGg7UI6mTapP1ZQc4yvuYpDD2ruS3BjqdAQCdST0ihFHh1CAGOVIvHyuuUT4cposdtgNrCEqFjbH8jz6iOFK0dz9fcPTymbv0kK/H0nOPLCOwQFzyzm8A+OMNDYWY50w1oV9HQwHF8mre2ZR7J7clDA3tZFvR0e2zwopajclbvRfVLhjopBSfHNJ0VvU/rv/yQu/0ghkmfpTVEiGDezAUxwWCYg46Rmw9Xrg8M6abe2PBPz/myuk="
 
 let microphoneStream = undefined;
 const language = "en-US";
@@ -181,6 +182,11 @@ const startButtonAction = async () => {
                 formModel.next_utterance = response.next_utterance;
             }
 
+            if (response.next_utterance === "FARM_LOAN") {
+                retrieveAndGenerate();
+                formModel.next_utterance = "";
+            }
+
             model_responses += `Bot: ${response}<br>`;
             modelResponseDiv.innerHTML = model_responses;
 
@@ -279,7 +285,7 @@ const systemPrompt = `
             "phone_number": "+1-555-123-4567",
             "email": "john.doe@example.com",
             "reason_for_call": "Help with my account",
-            "next_utterance": "The next thing the bot should say to fill out this form"
+            "next_utterance": "Reply with 'FARM_LOAN' talk to USDA knowledge base when questions about farm loans are asked, otherwise respond with an empty string"
         }
         
         If you are unable to extract any information, return the form with empty strings as values, for example:
@@ -512,3 +518,44 @@ async function speakText(text) {
     document.getElementById("audioPlayback").load();
     document.getElementById("audioPlayback").play()
 }
+
+let advisorPanelArticle = document.getElementById("advisor-panel");
+let advisorContentP = document.getElementById("advisorContent");
+
+const {RetrieveAndGenerateCommand} = require("@aws-sdk/client-bedrock-agent-runtime"); // CommonJS import
+const bedrockAgentClient = new BedrockAgentRuntimeClient({
+    region: 'us-west-2',
+    credentials: {
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        sessionToken: AWS_SESSION_TOKEN
+    },
+});
+
+
+async function retrieveAndGenerate() {
+    const retrieveAndGenerateRequest = {
+        input: {
+            text: 'How do I apply for a farm loan?',
+        },
+        retrieveAndGenerateConfiguration: {
+            type: 'KNOWLEDGE_BASE',
+            knowledgeBaseConfiguration: { // KnowledgeBaseRetrieveAndGenerateConfiguration
+                knowledgeBaseId: "PBP09SCP0Z", // required
+                modelArn: 'arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-3-haiku-20240307-v1:0'
+            },
+        }
+    }
+
+    const command = new RetrieveAndGenerateCommand(retrieveAndGenerateRequest);
+    console.log('RetrieveAndGenerateCommand command: ', command);
+
+    const response = await bedrockAgentClient.send(command);
+    console.log('response: ', response);
+
+    console.log('response.output.tedt: ', response.output.text);
+
+    advisorPanelArticle.classList.remove("hidden");
+    advisorContentP.innerText = response.output.text;
+}
+
