@@ -1,4 +1,13 @@
-# Welcome to Hack Midwest 2024!
+# VoiceForms instructions
+
+## Running tailwindcss
+When developing css locally, you must run the command: 
+
+npm run buildcss
+
+## Running in docker
+Run the run_docker.sh file to build and run docker locally
+
 <br /><br />
 
 

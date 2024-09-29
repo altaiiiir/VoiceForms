@@ -94,7 +94,9 @@ const stopRecording = async function () {
 
     let cid = await uploadFileToPinata()
     let transcript = await getByCid(cid);
-    let evaluation = await evaluateTranscript(transcript)
+    let evaluation = await evaluateTranscript(transcript);
+    showCallRatings(evaluation);
+
 
 };
 
@@ -187,6 +189,32 @@ const startButtonAction = async () => {
 
 const stopButtonAction = () => {
     stopRecording();
+}
+
+const showCallRatings = (ratings) => {
+    const ratingsPanel = document.getElementById("ratings-panel");
+    const overallLabel = document.getElementById("overall-label");
+    const overallProgress = document.getElementById("overall-progress");
+    const speedLabel = document.getElementById("speed-label");
+    const speedProgress = document.getElementById("speed-progress");
+    const sentimentLabel = document.getElementById("sentiment-label");
+    const sentimentProgress = document.getElementById("sentiment-progress");
+    const accuracyLabel = document.getElementById("accuracy-label");
+    const accuracyProgress = document.getElementById("accuracy-progress");
+    const postitivesText = document.getElementById("positives-text");
+    const opportunitiesText = document.getElementById("opportunities-text");
+
+    ratingsPanel.classList.remove("hidden");
+    overallLabel.innerText = `Overall: ${ratings.overall}`;
+    overallProgress.value = ratings.overall;
+    speedLabel.innerText = `Speed: ${ratings.speed}`;
+    speedProgress.value = ratings.speed;
+    sentimentLabel.innerText = `Sentiment: ${ratings.sentiment}`;
+    sentimentProgress.value = ratings.sentiment;
+    accuracyLabel.innerText = `Accuracy: ${ratings.accuracy}`;
+    accuracyProgress.value = ratings.accuracy;
+    postitivesText.innerText = `Positives: ${ratings.positives}`;
+    opportunitiesText.innerText = `Opportunities: ${ratings.opportunities}`;
 }
 
 /*
@@ -291,7 +319,7 @@ async function invokeModel(prompt, formModel) {
         // Process the response
         // JSON.parse()
         const generatedText = await JSON.parse(response.output.message.content[0].text);
-        console.log('Generated: ', generatedText);
+        console.log('Generated for InvokeModel: ', generatedText);
 
         return generatedText;
     } catch (error) {
@@ -354,9 +382,11 @@ async function evaluateTranscript(transcript) {
                     content: [
                         {
                             text: `You are a conversation evaluator responsible for evaluating a call transcript and
-                                judging the systems performance at recognizing and extracting customer information.
+                                judging the agent's performance in interacting with the customer.
                                 
-                                Reply with an evaluation of the systems speed, accuracy, and overall performance. Each 
+                                This will be used to provide feedback to the agent and the business about the customer interaction.
+                                
+                                Reply with an evaluation of the speed, accuracy, and overall performance. Each 
                                 of these metrics should be on a scale of 1 to 100 with 100 being the highest.
                                 
                                 You will also need to provide a summary of the positives and opportunities for improvement. Use
@@ -378,9 +408,9 @@ async function evaluateTranscript(transcript) {
                                 
                                 Ensure the extracted information is accurate and matches the context of the conversation.
 
-                                 Ensure that your response ONLY includes the result JSON and no other text.
+                                Ensure that your response ONLY includes the result JSON and no other text.
                                 
-                                The customers transcript is as follows: `,
+                                The customer's transcript is as follows: `,
                         },
 
                         {
@@ -410,7 +440,7 @@ async function evaluateTranscript(transcript) {
         // Process the response
         // JSON.parse()
         const generatedText = await JSON.parse(response.output.message.content[0].text);
-        console.log('Generated: ', generatedText);
+        console.log('Generated for evaluateTranscript: ', generatedText);
 
         return generatedText;
     } catch (error) {
