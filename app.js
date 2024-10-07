@@ -5,12 +5,19 @@ import {BedrockRuntimeClient, ConverseCommand} from "@aws-sdk/client-bedrock-run
 import {PinataSDK} from "pinata";
 import {PollyClient} from "@aws-sdk/client-polly";
 import {getSynthesizeSpeechUrl} from "@aws-sdk/polly-request-presigner";
-
+import {BedrockAgentRuntimeClient} from "@aws-sdk/client-bedrock-agent-runtime"; // ES Modules import
 
 const AWS_DEFAULT_REGION="us-west-2"
-const AWS_ACCESS_KEY_ID="ASIAVWABJWV2AOXUURCT"
-const AWS_SECRET_ACCESS_KEY="GV800V1wjNcRAgASLilbN4lG5p/C+DB0T7huS3z8"
-const AWS_SESSION_TOKEN="IQoJb3JpZ2luX2VjELH//////////wEaCXVzLXdlc3QtMiJHMEUCIQCCj7gKZbSFTC2gXMBzltQKCYZQMKOXJAyfEX8yNqszDAIgIrmEke69FSd5X/CdxsGKPSXOn6svGhsPs7acSWBO49kqrgMI+v//////////ARAAGgwzOTA4NDQ3NTczNjQiDMJDf6V7RISZYRbsJyqCA55htfpcauyIQU0/lYx1SKAFal2IgqNzkGCjzZtNnEm3nnctJLg6u5L43NLcLWeJLDgqz27soG3VBLHF89xISiaBQr0U77aGcyAm52sWQ3Yx6+eazGjpyita6V0xhaXFz08lwuu3fHXPWZU+q/gKTt8ouiaNnSDsgwxYIBtAvTWFe8OcZWVAQw0Dt/v/Jg9gpkyEWibsR8LXb+i9/VwxDO6C7b+SHyao/tJeIPLv1MVtLHhi4S2S1jvtcKcMTg8UpOHrunbnqwEO4/5wQJ4ScWwbi5Xe4mzJXIjjpIJG8Hkwmew16aKnzLyAQzs3ZUWKeKZipHiBvsSaRxkwxE0tEnfbw60KhjrW072sew5xrf4qu2FDfiQ0497rU2AGW8dYHvYdUn0mR2Y9UNHkrhqrQPiCwUFEJZOWW29z2lWjMzJMMUygEsYxoxDCbPPtRBqlJywlwZKVPlBzE5PXYejpjeIhR0Ic6xJBi5oKRNOhVmimo1Wa7lw0sYZBzks1yR1rzLv5MI22h7gGOqYBpmNa0mLkRK8U7VYA+fKgmDITOHJ11gcabOPgVIkTkjEuhJG+i5v+TT/dJGYMrikE+q1TqpgBsqCgkD6iAOiBrEzEcXqAcdFtJ8hCOGmq4hn5Ge4u5Den67tSkQYilP70ROuuQ+E5GveKdeOyE2x9a0RaVwx5inyUD17qgIuvM1eVR93XvdF5C/PATQ09Vfj3Y1ip3AL++N6NIUmoZFF0CRAb/ZF49Q=="
+// const AWS_ACCESS_KEY_ID="ASIAVWABJWV2ER2JYVBW"
+// const AWS_SECRET_ACCESS_KEY="IE0g0seWVsLHodqap/5wj1pjafISSB0ypVKXIoYg"
+// const AWS_SESSION_TOKEN="IQoJb3JpZ2luX2VjEMz//////////wEaCXVzLXdlc3QtMiJHMEUCIQDlLuPiNp8uGvrfqjDoA88kAKq/6Cmlb5Zv/8x4XPauIAIgCQ3ItdcxY5sEMVlS2KPQqDQ8Ymwqbs0bwx83vdt8wQ8qpQMIJRAAGgwzOTA4NDQ3NTczNjQiDMiHYik9Dtuf9nDlKCqCAxC3N2wg4gnCvCyNiIhn5UmsvHM8LGdzvqNGPAUhRj5Op1cn6wLp23XkJVd3+iOyufzyfBVgiegRU8AX7uSEJ7G7eILxQWqDgb2LwIExfNeaLKeOYbyrDJNfMyS6btiP5o6WlyzjnNT9wN3kErM93jD7zGiTT4VfqNftzHjoatS7mPI7N6Tdq+T8WuURSeDWZFbgpetQtZtJLXaBu5c2ILGJ/5Mqcs8/f83oUidhRsSp9t1RbqBCsaniUaXdsaFRfQOr6j0D3yPyqh+BRr5n8MwkkWkn5AGjTfWL5rfq3HIR5hlqUmR63CfdXUs0Czl63X+kPeU7+74jw8tcqLoSUTh9U6Zj4OfHv4yS4BMxTVNwA6dM8+9z8vNjlHYKowtFo6/nAoGTCR1yWnz7DbvpEiY+voP6PFme9lwTYylirEIZ8EHAzXpZtU6HYr54P1MsPySoGVwSGHe1xbJclqMheblzETdS1Bsi/MiBT8y3RcGI/jZIuQLrLUOmHu3I6LHOe58iMIKtjbgGOqYBnheedDUXVoGY/mO0niOb4e28PRG/VMja/nSsHGD0teKkjSxO+At9zNnBkxqH+P/G+uXVzXg7ISSuroLIeLpeqLP7zA5qY648IaI429bk9/+BR4snuUOQVJ4dZwnRxnPV3uVTjLzkfEWVZlcQrul+lzDUKpuEIUHCcBqNIpNSrn16PeJqYbZeUToTBYXr4T7Cxmw1X1pxDx780BnkISyNk064gzrAwQ=="
+
+const AWS_ACCESS_KEY_ID=process.env.AWS_ACCESS_KEY_ID;
+const AWS_SECRET_ACCESS_KEY=process.env.AWS_SECRET_ACCESS_KEY;
+const AWS_SESSION_TOKEN=process.env.AWS_SESSION_TOKEN;
+console.log('AWS_ACCESS_KEY_ID: ', AWS_ACCESS_KEY_ID);
+console.log('AWS_SECRET_ACCESS_KEY: ', AWS_SECRET_ACCESS_KEY);
+console.log('AWS_SESSION_TOKEN: ', AWS_SESSION_TOKEN);
 
 let microphoneStream = undefined;
 const language = "en-US";
@@ -181,6 +188,11 @@ const startButtonAction = async () => {
                 formModel.next_utterance = response.next_utterance;
             }
 
+            if (response.next_utterance === "MEDICARE_DONUT") {
+                retrieveAndGenerate();
+                formModel.next_utterance = "";
+            }
+
             model_responses += `Bot: ${response}<br>`;
             modelResponseDiv.innerHTML = model_responses;
 
@@ -220,16 +232,20 @@ const showCallRatings = (ratings) => {
     const opportunitiesText = document.getElementById("opportunities-text");
 
     ratingsPanel.classList.remove("hidden");
-    overallLabel.innerText = `Overall: ${ratings.overall}`;
-    overallProgress.value = ratings.overall;
-    speedLabel.innerText = `Speed: ${ratings.speed}`;
-    speedProgress.value = ratings.speed;
-    sentimentLabel.innerText = `Sentiment: ${ratings.sentiment}`;
-    sentimentProgress.value = ratings.sentiment;
-    accuracyLabel.innerText = `Accuracy: ${ratings.accuracy}`;
-    accuracyProgress.value = ratings.accuracy;
-    postitivesText.innerText = `Positives: ${ratings.positives}`;
-    opportunitiesText.innerText = `Opportunities: ${ratings.opportunities}`;
+    if (ratings?.overall) {
+        overallLabel.innerText = `Overall: ${ratings.overall}`;
+        overallProgress.value = ratings.overall;
+        speedLabel.innerText = `Speed: ${ratings.speed}`;
+        speedProgress.value = ratings.speed;
+        sentimentLabel.innerText = `Sentiment: ${ratings.sentiment}`;
+        sentimentProgress.value = ratings.sentiment;
+        accuracyLabel.innerText = `Accuracy: ${ratings.accuracy}`;
+        accuracyProgress.value = ratings.accuracy;
+        postitivesText.innerText = `Positives: ${ratings.positives}`;
+        opportunitiesText.innerText = `Opportunities: ${ratings.opportunities}`;
+    } else {
+        console.error("Ratings not returned properly. There is no overall property")
+    }
 }
 
 /*
@@ -279,7 +295,7 @@ const systemPrompt = `
             "phone_number": "+1-555-123-4567",
             "email": "john.doe@example.com",
             "reason_for_call": "Help with my account",
-            "next_utterance": "The next thing the bot should say to fill out this form"
+            "next_utterance": "Reply with 'MEDICARE_DONUT' talk to  knowledge base when questions about Medicare donut are asked, otherwise respond with an empty string"
         }
         
         If you are unable to extract any information, return the form with empty strings as values, for example:
@@ -458,6 +474,7 @@ async function evaluateTranscript(transcript) {
 
         // Process the response
         // JSON.parse()
+        console.log('evaluateTranscript response: ', response);
         const generatedText = await JSON.parse(response.output.message.content[0].text);
         console.log('Generated for evaluateTranscript: ', generatedText);
 
@@ -512,3 +529,44 @@ async function speakText(text) {
     document.getElementById("audioPlayback").load();
     document.getElementById("audioPlayback").play()
 }
+
+let advisorPanelArticle = document.getElementById("advisor-panel");
+let advisorContentP = document.getElementById("advisorContent");
+
+const {RetrieveAndGenerateCommand} = require("@aws-sdk/client-bedrock-agent-runtime"); // CommonJS import
+const bedrockAgentClient = new BedrockAgentRuntimeClient({
+    region: 'us-west-2',
+    credentials: {
+        accessKeyId: AWS_ACCESS_KEY_ID,
+        secretAccessKey: AWS_SECRET_ACCESS_KEY,
+        sessionToken: AWS_SESSION_TOKEN
+    },
+});
+
+
+async function retrieveAndGenerate() {
+    const retrieveAndGenerateRequest = {
+        input: {
+            text: 'Explain the Medicare Donut coverage gap',
+        },
+        retrieveAndGenerateConfiguration: {
+            type: 'KNOWLEDGE_BASE',
+            knowledgeBaseConfiguration: { // KnowledgeBaseRetrieveAndGenerateConfiguration
+                knowledgeBaseId: "UOU6G8VXAP", // required
+                modelArn: 'arn:aws:bedrock:us-west-2::foundation-model/anthropic.claude-3-haiku-20240307-v1:0'
+            },
+        }
+    }
+
+    const command = new RetrieveAndGenerateCommand(retrieveAndGenerateRequest);
+    console.log('RetrieveAndGenerateCommand command: ', command);
+
+    const response = await bedrockAgentClient.send(command);
+    console.log('response: ', response);
+
+    console.log('response.output.tedt: ', response.output.text);
+
+    advisorPanelArticle.classList.remove("hidden");
+    advisorContentP.innerText = response.output.text;
+}
+

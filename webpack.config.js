@@ -18,6 +18,11 @@ module.exports = {
       Buffer: ["buffer", "Buffer"], // Provide Buffer globally
       process: "process/browser", // Provide process globally
     }),
+    new webpack.DefinePlugin({
+      'process.env.AWS_ACCESS_KEY_ID': JSON.stringify(process.env.AWS_ACCESS_KEY_ID),
+      'process.env.AWS_SECRET_ACCESS_KEY': JSON.stringify(process.env.AWS_SECRET_ACCESS_KEY),
+      'process.env.AWS_SESSION_TOKEN': JSON.stringify(process.env.AWS_SESSION_TOKEN),
+    }),
   ],
   devServer: {
     static: {

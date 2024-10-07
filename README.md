@@ -5,15 +5,24 @@ index.html loads app.js that has most of the functionality.
 There is a webpack build needed for the dependencies.
 
 ```shell
+# Load the AWS credentials first into environment variables
+# Go to https://d-9267902375.awsapps.com/start/#/?tab=accounts
+# then for the account you want to use, expand the arrow and click access keys
+# Copy the access keys environment variables from 
+# "Option 1: Set AWS environment variables"
+# then paste them into terminal BEFORE running the following commands.
+node server.js
 npm run build
 npm run start
 ```
 
 ## Running tailwindcss
-When developing css locally, you must run the command: 
+When developing css locally, you must run the command which will filter code for the 
+used tailwind classes to generate the output.css.  Check in the output.css resulting file changes.
 
+```shell
 npm run buildcss
-
+```
 
 ## Running in docker
 Run the run_docker.sh file to build and run docker locally
