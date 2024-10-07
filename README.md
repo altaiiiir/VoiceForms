@@ -1,9 +1,19 @@
 # VoiceForms instructions
 
+# Running the app
+index.html loads app.js that has most of the functionality.
+There is a webpack build needed for the dependencies.
+
+```shell
+npm run build
+npm run start
+```
+
 ## Running tailwindcss
 When developing css locally, you must run the command: 
 
 npm run buildcss
+
 
 ## Running in docker
 Run the run_docker.sh file to build and run docker locally

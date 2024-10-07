@@ -12,3 +12,4 @@ frontend/node_modules/
 /.idea/VoiceForms.iml
 /node_modules/*
 venv/
+bundle.js
