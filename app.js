@@ -15,9 +15,9 @@ const AWS_DEFAULT_REGION="us-west-2"
 const AWS_ACCESS_KEY_ID=process.env.AWS_ACCESS_KEY_ID;
 const AWS_SECRET_ACCESS_KEY=process.env.AWS_SECRET_ACCESS_KEY;
 const AWS_SESSION_TOKEN=process.env.AWS_SESSION_TOKEN;
-console.log('AWS_ACCESS_KEY_ID: ', AWS_ACCESS_KEY_ID);
-console.log('AWS_SECRET_ACCESS_KEY: ', AWS_SECRET_ACCESS_KEY);
-console.log('AWS_SESSION_TOKEN: ', AWS_SESSION_TOKEN);
+// console.log('AWS_ACCESS_KEY_ID: ', AWS_ACCESS_KEY_ID);
+// console.log('AWS_SECRET_ACCESS_KEY: ', AWS_SECRET_ACCESS_KEY);
+// console.log('AWS_SESSION_TOKEN: ', AWS_SESSION_TOKEN);
 
 let microphoneStream = undefined;
 const language = "en-US";
@@ -241,8 +241,8 @@ const showCallRatings = (ratings) => {
         sentimentProgress.value = ratings.sentiment;
         accuracyLabel.innerText = `Accuracy: ${ratings.accuracy}`;
         accuracyProgress.value = ratings.accuracy;
-        postitivesText.innerText = `Positives: ${ratings.positives}`;
-        opportunitiesText.innerText = `Opportunities: ${ratings.opportunities}`;
+        postitivesText.innerText = `${ratings.positives}`;
+        opportunitiesText.innerText = `${ratings.opportunities}`;
     } else {
         console.error("Ratings not returned properly. There is no overall property")
     }
